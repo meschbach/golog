@@ -9,9 +9,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/mndrix/golog/term"
+	"github.com/meschbach/golog/term"
+	. "github.com/meschbach/golog/util"
 )
-import . "github.com/mndrix/golog/util"
 
 // !/0
 func BuiltinCut(m Machine, args []term.Term) ForeignReturn {

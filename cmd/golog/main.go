@@ -9,9 +9,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mndrix/golog"
-	"github.com/mndrix/golog/read"
-	"github.com/mndrix/golog/term"
+	"github.com/meschbach/golog"
+	"github.com/meschbach/golog/read"
+	"github.com/meschbach/golog/term"
 )
 
 func main() {

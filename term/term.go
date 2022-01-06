@@ -12,7 +12,7 @@ import "math/big"
 import "math"
 import "strconv"
 import "strings"
-import "github.com/mndrix/golog/lex"
+import "github.com/meschbach/golog/lex"
 import "github.com/mndrix/ps"
 
 // Returned by Unify() if the unification fails

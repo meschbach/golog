@@ -3,7 +3,7 @@ package golog
 import (
 	"strconv"
 
-	"github.com/mndrix/golog/term"
+	"github.com/meschbach/golog/term"
 	"github.com/mndrix/ps"
 )
 

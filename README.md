@@ -1,11 +1,11 @@
 golog
 =====
 
-Prolog interpreter in Go with aspirations to be ISO compatible.  See the [full package documentation](http://godoc.org/github.com/mndrix/golog) for usage details.
+Prolog interpreter in Go with aspirations to be ISO compatible.  See the [full package documentation](http://godoc.org/github.com/meschbach/golog) for usage details.
 
 Install with
 
-    go get github.com/mndrix/golog
+    go get github.com/meschbach/golog
 
 Status
 ------

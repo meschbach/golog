@@ -2,7 +2,7 @@ package term
 
 import . "fmt"
 import . "regexp"
-import . "github.com/mndrix/golog/util"
+import . "github.com/meschbach/golog/util"
 
 var anonCounter <-chan int64
 

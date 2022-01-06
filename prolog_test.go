@@ -7,9 +7,9 @@ package golog
 
 import "os"
 import "testing"
-import "github.com/mndrix/golog/read"
-import "github.com/mndrix/golog/term"
-import . "github.com/mndrix/golog/util"
+import "github.com/meschbach/golog/read"
+import "github.com/meschbach/golog/term"
+import . "github.com/meschbach/golog/util"
 
 func TestPureProlog(t *testing.T) {
 	// find all t/*.pl files

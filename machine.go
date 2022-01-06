@@ -52,8 +52,8 @@
 //  * Standard library: See golog/prelude package
 package golog
 
-import . "github.com/mndrix/golog/term"
-import . "github.com/mndrix/golog/util"
+import . "github.com/meschbach/golog/term"
+import . "github.com/meschbach/golog/util"
 
 import (
 	"bufio"
@@ -63,8 +63,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mndrix/golog/prelude"
-	"github.com/mndrix/golog/read"
+	"github.com/meschbach/golog/prelude"
+	"github.com/meschbach/golog/read"
 	"github.com/mndrix/ps"
 )
 
