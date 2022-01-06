@@ -52,8 +52,10 @@
 //  * Standard library: See golog/prelude package
 package golog
 
-import . "github.com/meschbach/golog/term"
-import . "github.com/meschbach/golog/util"
+import (
+	. "github.com/meschbach/golog/term"
+	. "github.com/meschbach/golog/util"
+)
 
 import (
 	"bufio"
@@ -275,6 +277,9 @@ func (m *machine) RegisterForeign(fs map[string]ForeignPredicate) Machine {
 	m1 := m.clone()
 	for indicator, f := range fs {
 		parts := strings.SplitN(indicator, "/", 2)
+		if len(parts) != 2 {
+			MaybePanic(fmt.Errorf("predicate form not matching [name]/[#arity], got %q", indicator))
+		}
 		functor := parts[0]
 		arity, err := strconv.Atoi(parts[1])
 		MaybePanic(err)
