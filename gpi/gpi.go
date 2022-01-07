@@ -7,26 +7,20 @@ import (
 	"github.com/meschbach/golog/term"
 )
 
-type IntSlicePredicate struct {
-	inputs   []term.Term
-	origin   golog.Machine
-	elements []int
-	index    int
+type SliceAccessor interface {
+	AsTerms() []term.Term
+	Next() bool
 }
 
-func (i *IntSlicePredicate) Follow() (golog.Machine, error) {
-	currentIndex := i.index
-	i.index++
+type SlicePredicate struct {
+	inputs []term.Term
+	origin golog.Machine
+	slice  SliceAccessor
+}
 
-	value := i.elements[currentIndex]
-
-	indexTerm := term.NewInt64(int64(currentIndex))
-	valueTerm := term.NewInt64(int64(value))
-
-	terms := []term.Term{
-		indexTerm,
-		valueTerm,
-	}
+func (i *SlicePredicate) Follow() (golog.Machine, error) {
+	terms := i.slice.AsTerms()
+	more := i.slice.Next()
 	if len(terms) != len(i.inputs) {
 		panic(fmt.Sprintf("Expcted %d terms, got %d terms", len(i.inputs), len(terms)))
 	}
@@ -41,20 +35,38 @@ func (i *IntSlicePredicate) Follow() (golog.Machine, error) {
 	}
 
 	next := i.origin.SetBindings(env)
-	if i.index < len(i.elements) {
+	if more {
 		next = next.PushDisj(i)
 	}
 	return next, nil
+}
 
+type IntSliceAccessor struct {
+	elements []int
+	position int
+}
+
+func (i *IntSliceAccessor) AsTerms() []term.Term {
+	return []term.Term{
+		term.NewInt64(int64(i.position)),
+		term.NewInt64(int64(i.elements[i.position])),
+	}
+}
+
+func (i *IntSliceAccessor) Next() bool {
+	i.position++
+	return i.position < len(i.elements)
 }
 
 func NewIntSlicePredicate(args ...int) golog.ForeignPredicate {
 	return func(machine golog.Machine, terms []term.Term) golog.ForeignReturn {
-		it := &IntSlicePredicate{
-			inputs:   terms,
-			origin:   machine,
-			elements: args,
-			index:    0,
+		it := &SlicePredicate{
+			inputs: terms,
+			origin: machine,
+			slice: &IntSliceAccessor{
+				elements: args,
+				position: 0,
+			},
 		}
 
 		m, err := it.Follow()
