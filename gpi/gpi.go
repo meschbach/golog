@@ -7,11 +7,17 @@ import (
 	"github.com/meschbach/golog/term"
 )
 
+//SliceAccessor is an iterator returning the set of Prolog Terms for the solution it is currently at.  Once the end has
+//been reached calling any other method is considered an error
 type SliceAccessor interface {
+	//AsTerms provides the representation of the current position as a set of Prolog terms
 	AsTerms() []term.Term
+	//Next position in the slice, returning true if there are additional positions or false if the end of the slice has
+	//been reached.
 	Next() bool
 }
 
+//SlicePredicate adapts teh SliceAccessor into a ForeignPredicate for usage as a back trackable predicate within Golog.
 type SlicePredicate struct {
 	inputs []term.Term
 	origin golog.Machine
@@ -68,6 +74,7 @@ func (i *SlicePredicate) Follow() (golog.Machine, error) {
 	}
 }
 
+//IntSliceAccessor adapts a primitive int slice into Golog GolangIntTerm in the form of Index, Value
 type IntSliceAccessor struct {
 	elements []int
 	position int
@@ -85,6 +92,7 @@ func (i *IntSliceAccessor) Next() bool {
 	return i.position < len(i.elements)
 }
 
+//NewIntSlicePredicate provides a golog.ForeignPredicate which provides all solutions for each call.
 func NewIntSlicePredicate(args ...int) golog.ForeignPredicate {
 	return func(machine golog.Machine, terms []term.Term) golog.ForeignReturn {
 		it := &SlicePredicate{
