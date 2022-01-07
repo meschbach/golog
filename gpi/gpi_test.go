@@ -44,7 +44,7 @@ func TestSimpleBacktracking(t *testing.T) {
 	}
 }
 
-func TestMatching(t *testing.T) {
+func TestMatchingElement(t *testing.T) {
 	example := []int{0, 1, 2, 3, 4, 10}
 	m := golog.NewMachine().RegisterForeign(map[string]golog.ForeignPredicate{
 		"int_slice/2": NewIntSlicePredicate(example...),
@@ -52,6 +52,20 @@ func TestMatching(t *testing.T) {
 	resultSet := m.ProveAll("int_slice(I,4).")
 	for _, binding := range resultSet {
 		assertInt(t, binding, "I", 4)
+	}
+	if len(resultSet) != 1 {
+		t.Errorf("Expected %d results, received %d", 1, len(resultSet))
+	}
+}
+
+func TestMatchingIndex(t *testing.T) {
+	example := []int{0, 1, 2, 3, 4, 10}
+	m := golog.NewMachine().RegisterForeign(map[string]golog.ForeignPredicate{
+		"int_slice/2": NewIntSlicePredicate(example...),
+	})
+	resultSet := m.ProveAll("int_slice(3,I).")
+	for _, binding := range resultSet {
+		assertInt(t, binding, "I", 3)
 	}
 	if len(resultSet) != 1 {
 		t.Errorf("Expected %d results, received %d", 1, len(resultSet))
