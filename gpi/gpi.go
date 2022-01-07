@@ -18,27 +18,54 @@ type SlicePredicate struct {
 	slice  SliceAccessor
 }
 
-func (i *SlicePredicate) Follow() (golog.Machine, error) {
+func (i *SlicePredicate) first() golog.ForeignReturn  {
+	out, err := i.Follow()
+	if err == term.CantUnify {
+		return golog.ForeignFail()
+	} else if err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func (i *SlicePredicate) attemptPositionUnify() (term.Bindings, error) {
 	terms := i.slice.AsTerms()
-	more := i.slice.Next()
 	if len(terms) != len(i.inputs) {
 		panic(fmt.Sprintf("Expcted %d terms, got %d terms", len(i.inputs), len(terms)))
 	}
 
 	var err error
 	env := i.origin.Bindings()
-	for termIndex := 0; termIndex < len(terms); termIndex++ {
-		env, err = i.inputs[termIndex].Unify(env, terms[termIndex])
+	for termIndex, term := range terms {
+		env, err = term.Unify(env,  i.inputs[termIndex])
 		if err != nil {
 			return nil, err
 		}
 	}
+	return env, nil
+}
 
-	next := i.origin.SetBindings(env)
-	if more {
-		next = next.PushDisj(i)
+func (i *SlicePredicate) Follow() (golog.Machine, error) {
+	for {
+		env, err := i.attemptPositionUnify()
+		if err == nil {
+			more := i.slice.Next()
+
+			next := i.origin.SetBindings(env)
+			if more {
+				next = next.PushDisj(i)
+			}
+			return next, nil
+		}
+
+		if err == term.CantUnify {
+			if !i.slice.Next() {
+				return nil, term.CantUnify
+			}
+		} else if err != nil {
+			return nil, err
+		}
 	}
-	return next, nil
 }
 
 type IntSliceAccessor struct {
@@ -48,8 +75,8 @@ type IntSliceAccessor struct {
 
 func (i *IntSliceAccessor) AsTerms() []term.Term {
 	return []term.Term{
-		term.NewInt64(int64(i.position)),
-		term.NewInt64(int64(i.elements[i.position])),
+		term.WrapInt(i.position),
+		term.WrapInt(i.elements[i.position]),
 	}
 }
 
@@ -69,16 +96,6 @@ func NewIntSlicePredicate(args ...int) golog.ForeignPredicate {
 			},
 		}
 
-		m, err := it.Follow()
-		//Filter through each possibility until we can resolve the constraints
-		for ; err == term.CantUnify; m, err = it.Follow() {
-
-		}
-		if err != nil {
-			//TODO: Should not eat error
-			//panic(err)
-			return golog.ForeignFail()
-		}
-		return m
+		return it.first()
 	}
 }

@@ -7,24 +7,21 @@ import (
 )
 
 func assertInt(t *testing.T, binding term.Bindings, name string, value int) {
+	t.Helper()
 	termBinding, err := binding.ByName(name)
 	if err != nil {
 		t.Errorf("Binding problem for %q: %s", name, err)
 		return
 	}
+	//fmt.Printf("Asserting %q (unified with %q %#v) matches %d\n", name, termBinding, termBinding, value)
 	var ok bool
-	var numberTerm term.Number
-	if numberTerm, ok = termBinding.(term.Number); !ok {
-		t.Errorf("%q is not a number", name)
+	var numberTerm *term.GolangIntTerm
+	if numberTerm, ok = termBinding.(*term.GolangIntTerm); !ok {
+		t.Errorf("%q is not a number; instead %s", name, termBinding)
 		return
 	}
-	bigInt, fits := numberTerm.LosslessInt()
-	if !fits {
-		t.Errorf("%q is not an integer, got %s", name, numberTerm)
-		return
-	}
-	actualValue := bigInt.Int64()
-	if actualValue != int64(value) {
+	actualValue := int(*numberTerm)
+	if actualValue != value {
 		t.Errorf("Expected %q to be %d, got %d", name, value, actualValue)
 	}
 }

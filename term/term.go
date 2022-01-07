@@ -28,6 +28,9 @@ const (
 
 	// odd man out
 	ErrorType
+
+	//Golang types
+	GolangInt
 )
 
 // Term represents a single Prolog term which might be an atom, a
